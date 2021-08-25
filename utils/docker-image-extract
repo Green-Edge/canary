@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+
+# Call me like this:
+#  docker-image-extract tarfile.tar extracted
+
+import tarfile
+import json
+import os
+import sys
+
+image_path = sys.argv[1]
+extracted_path = sys.argv[2]
+
+image = tarfile.open(image_path)
+manifest = json.loads(image.extractfile('manifest.json').read())
+
+for layer in manifest[0]['Layers']:
+    print(f'Found layer: {layer}')
+    layer_tar = tarfile.open(fileobj=image.extractfile(layer))
+
+    for tarinfo in layer_tar:
+        print(f'  ... {tarinfo.name}')
+        if tarinfo.isdev():
+            print('  --> skip device files')
+            continue
+
+        dest = os.path.join(extracted_path, tarinfo.name)
+        if not tarinfo.isdir() and os.path.exists(dest):
+            os.unlink(dest)
+            print('  --> removed old version of file')
+
+        layer_tar.extract(tarinfo, path=extracted_path)

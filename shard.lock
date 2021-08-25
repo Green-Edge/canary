@@ -1,0 +1,6 @@
+version: 2.0
+shards:
+  psutil:
+    git: https://github.com/green-edge/psutil.cr.git
+    version: 0.1.0+git.commit.4df54cb06febd293f9989a1d1a45dd2bfa8671b9
+
