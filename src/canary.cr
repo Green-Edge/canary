@@ -107,7 +107,8 @@ module Canary
     context.response.print data
   end
 
-  address = server.bind_tcp Socket::IPAddress.new("0.0.0.0", 80)
+  ipv4 = server.bind_tcp(Socket::IPAddress.new("0.0.0.0", 80), true)
+  ipv6 = server.bind_tcp(Socket::IPAddress.new("::", 80), true)
 
   Signal::INT.trap {
     puts "Exiting from Keyboard Interrupt..."
@@ -115,7 +116,7 @@ module Canary
     exit
   }
 
-  puts "Listening on http://#{address}"
+  puts "Listening on http://#{ipv4} and http://#{ipv6}"
   server.listen
 
 end
